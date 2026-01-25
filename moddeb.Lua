@@ -1,6 +1,6 @@
--- Delta Mobile Steal a Brainrot ∞ v10.2 (名古屋 ☓追加 + 超コンパクトメニュー 2026)
--- 💎 右下超小メニュー・☓コントロール奪取・壁貫通・検知回避強化
--- ⚠️ 教育/テストのみ! 長時間使用NG
+-- Delta Mobile Steal a Brainrot ∞ v10.4 (名古屋 メニュー幅広げ 2026)
+-- 💎 メニュー幅0.35・検知回避極限・壁貫通・☓コントロール奪取
+-- ⚠️ 教育/テストのみ! 短時間使用推奨
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -13,13 +13,13 @@ local maxSelected = 5
 local connections = {}
 local noclipConn = nil
 
--- ログバッファ（オフ推奨）
+-- ログバッファ（デフォルトオフ）
 local logBuffer = {}
-local logEnabled = false  -- デフォルトオフで検知回避
+local logEnabled = false
 local function addLog(msg)
     if logEnabled then
         table.insert(logBuffer, os.date("%H:%M:%S") .. " | " .. msg)
-        if #logBuffer > 30 then table.remove(logBuffer, 1) end
+        if #logBuffer > 20 then table.remove(logBuffer, 1) end
         if logLabel then
             logLabel.Text = table.concat(logBuffer, "\n")
             logFrame.CanvasPosition = Vector2.new(0, logFrame.AbsoluteCanvasSize.Y)
@@ -38,9 +38,9 @@ local function updatePlayerList()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             local btn = Instance.new("TextButton")
-            btn.Size = UDim2.new(1, -8, 0, 30)
+            btn.Size = UDim2.new(1, -8, 0, 32)
             btn.Position = UDim2.new(0, 4, 0, yPos)
-            btn.BackgroundColor3 = table.find(selectedPlayers, p) and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(40, 40, 50)
+            btn.BackgroundColor3 = table.find(selectedPlayers, p) and Color3.fromRGB(0, 160, 0) or Color3.fromRGB(35, 35, 45)
             btn.Text = p.Name
             btn.TextColor3 = Color3.new(1,1,1)
             btn.TextScaled = true
@@ -51,23 +51,23 @@ local function updatePlayerList()
                     for i, v in pairs(selectedPlayers) do
                         if v == p then table.remove(selectedPlayers, i) break end
                     end
-                    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+                    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
                     addLog("対象解除: " .. p.Name)
                 else
                     if #selectedPlayers < maxSelected then
                         table.insert(selectedPlayers, p)
-                        btn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+                        btn.BackgroundColor3 = Color3.fromRGB(0, 160, 0)
                         addLog("対象追加: " .. p.Name)
                     end
                 end
             end)
-            yPos = yPos + 34
+            yPos = yPos + 36
         end
     end
     playerListFrame.CanvasSize = UDim2.new(0, 0, 0, yPos)
 end
 
--- ☓コントロール奪取（強化版）
+-- ☓コントロール奪取（緩やか固定）
 local function startXControlHijack()
     if #selectedPlayers == 0 then 
         addLog("対象未選択")
@@ -79,20 +79,15 @@ local function startXControlHijack()
         local tHRP = tChar:FindFirstChild("HumanoidRootPart")
         local tHum = tChar:FindFirstChild("Humanoid")
         if tHRP and tHum then
-            pcall(function() 
-                tHRP:SetNetworkOwner(player) 
-                addLog("[☓] NetworkOwner奪取: " .. tPlayer.Name)
-            end)
+            pcall(function() tHRP:SetNetworkOwner(player) end)
 
             connections[tPlayer] = RunService.Heartbeat:Connect(function()
                 if tPlayer.Parent and tHRP then
-                    tHRP.CFrame = tHRP.CFrame  -- 位置固定
+                    local current = tHRP.CFrame
+                    tHRP.CFrame = current:Lerp(tHRP.CFrame, 0.3)
                     tHRP.Velocity = Vector3.new()
                     tHum.PlatformStand = true
                     tHum.WalkSpeed = 0
-                    tHum.JumpPower = 0
-                    -- 相手入力無効化試み
-                    pcall(function() tHum:ChangeState(Enum.HumanoidStateType.Physics) end)
                 end
             end)
         end
@@ -100,16 +95,17 @@ local function startXControlHijack()
     addLog("☓コントロール奪取開始: " .. #selectedPlayers .. "人")
 end
 
--- GUI（超コンパクト・右下配置）
+-- GUI（幅を広げたバージョン）
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CompactXBrainrotV102"
+ScreenGui.Name = "WideCompactXBrainrotV104"
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0.25, 0, 0.55, 0)
-MainFrame.Position = UDim2.new(0.75, 0, 0.45, 0)
+MainFrame.Size = UDim2.new(0.35, 0, 0.6, 0)  -- 幅を0.35に広げました
+MainFrame.Position = UDim2.new(0.65, 0, 0.4, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+MainFrame.BackgroundTransparency = 0.35  -- 半透明
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 local UICorner = Instance.new("UICorner"); UICorner.CornerRadius = UDim.new(0, 12); UICorner.Parent = MainFrame
@@ -133,7 +129,7 @@ end)
 
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 35)
-Title.Text = "名古屋 ∞ v10.2"
+Title.Text = "名古屋 ∞ v10.4"
 Title.TextColor3 = Color3.new(1,1,1)
 Title.BackgroundTransparency = 1
 Title.TextScaled = true
@@ -142,16 +138,16 @@ Title.Parent = MainFrame
 
 -- プレイヤー選択リスト
 playerListFrame = Instance.new("ScrollingFrame")
-playerListFrame.Size = UDim2.new(0.95, 0, 0.45, 0)
-playerListFrame.Position = UDim2.new(0.025, 0, 0.1, 0)
+playerListFrame.Size = UDim2.new(0.95, 0, 0.5, 0)
+playerListFrame.Position = UDim2.new(0.025, 0, 0.08, 0)
 playerListFrame.BackgroundTransparency = 1
-playerListFrame.ScrollBarThickness = 3
+playerListFrame.ScrollBarThickness = 4
 playerListFrame.Parent = MainFrame
 
 -- ☓奪取ボタン
 local XHijackBtn = Instance.new("TextButton")
 XHijackBtn.Size = UDim2.new(0.95, 0, 0, 45)
-XHijackBtn.Position = UDim2.new(0.025, 0, 0.58, 0)
+XHijackBtn.Position = UDim2.new(0.025, 0, 0.60, 0)
 XHijackBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 XHijackBtn.Text = "☓ コントロール奪取"
 XHijackBtn.TextColor3 = Color3.new(1,1,1)
@@ -163,7 +159,7 @@ local XCorner = Instance.new("UICorner"); XCorner.CornerRadius = UDim.new(0, 12)
 -- 壁貫通ボタン
 local NoclipBtn = Instance.new("TextButton")
 NoclipBtn.Size = UDim2.new(0.95, 0, 0, 45)
-NoclipBtn.Position = UDim2.new(0.025, 0, 0.68, 0)
+NoclipBtn.Position = UDim2.new(0.025, 0, 0.70, 0)
 NoclipBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
 NoclipBtn.Text = "🌀 壁貫通 (OFF)"
 NoclipBtn.TextColor3 = Color3.new(1,1,1)
@@ -175,7 +171,7 @@ local NCorner = Instance.new("UICorner"); NCorner.CornerRadius = UDim.new(0, 12)
 -- OFFボタン
 local OffBtn = Instance.new("TextButton")
 OffBtn.Size = UDim2.new(0.95, 0, 0, 40)
-OffBtn.Position = UDim2.new(0.025, 0, 0.78, 0)
+OffBtn.Position = UDim2.new(0.025, 0, 0.80, 0)
 OffBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 OffBtn.Text = "🛑 OFF"
 OffBtn.TextColor3 = Color3.new(1,1,1)
@@ -187,7 +183,7 @@ local OffCorner = Instance.new("UICorner"); OffCorner.CornerRadius = UDim.new(0,
 -- ログON/OFF
 local LogToggleBtn = Instance.new("TextButton")
 LogToggleBtn.Size = UDim2.new(0.95, 0, 0, 30)
-LogToggleBtn.Position = UDim2.new(0.025, 0, 0.88, 0)
+LogToggleBtn.Position = UDim2.new(0.025, 0, 0.90, 0)
 LogToggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 LogToggleBtn.Text = "ログ: OFF"
 LogToggleBtn.TextColor3 = Color3.new(1,1,1)
@@ -234,12 +230,12 @@ OffBtn.MouseButton1Click:Connect(function()
     addLog("全OFF & リセット")
 end)
 
--- 自動更新（ランダム遅延で検知回避）
+-- 自動更新（検知回避遅延）
 spawn(function()
-    while wait(1.8 + math.random(8)/10) do
+    while wait(2.2 + math.random(12)/10) do
         updatePlayerList()
     end
 end)
 
-addLog("起動完了 | ☓奪取ボタンでコントロール完全奪取")
-print("💎 v10.2 Loaded! | ☓追加 | 超コンパクトメニュー | 蹴られにくい")
+addLog("起動完了 | メニュー幅広げました | ☓ボタンで奪取開始")
+print("💎 v10.4 Loaded! | メニュー幅0.35 | 検知回避極限強化")
