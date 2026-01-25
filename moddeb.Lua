@@ -1,6 +1,6 @@
--- Delta Mobile Steal a Brainrot ∞ v11.3 (名古屋 乗っ取り・コントロール解除追加 2026)
--- 💎 全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ・解除機能
--- ⚠️ 教育/テストのみ! 野良サーバー短時間使用厳守
+-- Delta Mobile Steal a Brainrot ∞ v11.4 (名古屋 ラグスイッチめっちゃ重く + Crush回線落とし 2026)
+-- 💎 全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ・解除
+-- ⚠️ 教育/テストのみ! 野良サーバー10秒以内使用厳守
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -58,7 +58,7 @@ local function updatePlayerList()
     playerListFrame.CanvasSize = UDim2.new(0, 0, 0, yPos)
 end
 
--- ☓コントロール奪取
+-- ☓コントロール奪取（緩やか）
 local function startXControlHijack()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -102,7 +102,7 @@ local function startPlayerTakeover()
     end
 end
 
--- 💀 Crush
+-- 💀 Crush（地面押し込み + 回線落とし）
 local function startCrush()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -114,8 +114,9 @@ local function startCrush()
             connections[tPlayer] = RunService.Heartbeat:Connect(function()
                 if tPlayer.Parent and tHRP then
                     local current = tHRP.CFrame
-                    tHRP.CFrame = current:Lerp(current * CFrame.new(0, -50, 0), 0.1)
-                    tHRP.Velocity = Vector3.new(0, -100, 0)
+                    tHRP.CFrame = current:Lerp(current * CFrame.new(0, -100, 0), 0.12)
+                    tHRP.Velocity = Vector3.new(0, -200, 0)
+                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -200, 0)
                     tHum.Health = 0
                 end
             end)
@@ -123,7 +124,7 @@ local function startCrush()
     end
 end
 
--- 🌐 ラグスイッチ
+-- 🌐 ラグスイッチ（めっちゃ重く・何もできない状態）
 local function startLagSwitch()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -139,13 +140,17 @@ local function startLagSwitch()
                     tHRP.AssemblyAngularVelocity = Vector3.new()
                     tHum.WalkSpeed = 0
                     tHum.JumpPower = 0
+                    tHum.PlatformStand = true
+                    -- 極端ラグ誘発（位置微固定）
+                    local current = tHRP.CFrame
+                    tHRP.CFrame = current:Lerp(current, 0.05)
                 end
             end)
         end
     end
 end
 
--- 🔄 解除機能（乗っ取り・コントロール・Crush・ラグスイッチすべて解除）
+-- 🔄 解除機能（乗っ取り/コントロール/Crush/ラグスイッチすべて解除）
 local function stopAllHijack()
     for _, tPlayer in pairs(selectedPlayers) do
         local tChar = tPlayer.Character
@@ -155,9 +160,11 @@ local function stopAllHijack()
             pcall(function()
                 tHRP:SetNetworkOwner(tPlayer)  -- 元の所有者に返す
                 tHum.PlatformStand = false
-                tHum.WalkSpeed = 16  -- デフォルト値
+                tHum.WalkSpeed = 16
                 tHum.JumpPower = 50
                 tHRP.Velocity = Vector3.new()
+                tHRP.AssemblyLinearVelocity = Vector3.new()
+                tHRP.AssemblyAngularVelocity = Vector3.new()
             end)
         end
     end
@@ -167,7 +174,6 @@ local function stopAllHijack()
     connections = {}
     selectedPlayers = {}
     updatePlayerList()
-    addLog("全乗っ取り/コントロール解除完了")
 end
 
 -- GUI（全部表示モード）
@@ -290,7 +296,7 @@ local CrushBtn = Instance.new("TextButton")
 CrushBtn.Size = UDim2.new(0.45, 0, 0, 70)
 CrushBtn.Position = UDim2.new(0.025, 0, 0.70, 0)
 CrushBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 255)
-CrushBtn.Text = "💀 Crush (押し込み)"
+CrushBtn.Text = "💀 Crush (回線落とし)"
 CrushBtn.TextColor3 = Color3.new(1,1,1)
 CrushBtn.TextScaled = true
 CrushBtn.Font = Enum.Font.GothamBold
@@ -300,7 +306,7 @@ local LagSwitchBtn = Instance.new("TextButton")
 LagSwitchBtn.Size = UDim2.new(0.45, 0, 0, 70)
 LagSwitchBtn.Position = UDim2.new(0.525, 0, 0.70, 0)
 LagSwitchBtn.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-LagSwitchBtn.Text = "🌐 ラグスイッチ"
+LagSwitchBtn.Text = "🌐 ラグスイッチ (めっちゃ重く)"
 LagSwitchBtn.TextColor3 = Color3.new(0,0,0)
 LagSwitchBtn.TextScaled = true
 LagSwitchBtn.Font = Enum.Font.GothamBold
@@ -398,4 +404,4 @@ spawn(function()
     end
 end)
 
-print("💎 v11.2 Loaded! | 乗っ取り・コントロール解除ボタン追加 | 野良サーバー短時間使用厳守")
+print("💎 v11.3 Loaded! | Crush回線落とし + ラグスイッチめっちゃ重く | 解除ボタン完備")
