@@ -1,5 +1,5 @@
--- Delta Mobile Steal a Brainrot ∞ v11.4 (名古屋 ラグスイッチめっちゃ重く + Crush回線落とし 2026)
--- 💎 全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ・解除
+-- Delta Mobile Steal a Brainrot ∞ v11.6 (名古屋 メニュー幅広げ全部表示 2026)
+-- 💎 超見やすい全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ・解除・mod更新
 -- ⚠️ 教育/テストのみ! 野良サーバー10秒以内使用厳守
 
 local Players = game:GetService("Players")
@@ -31,8 +31,8 @@ local function updatePlayerList()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             local btn = Instance.new("TextButton")
-            btn.Size = UDim2.new(1, -10, 0, 45)
-            btn.Position = UDim2.new(0, 5, 0, yPos)
+            btn.Size = UDim2.new(1, -20, 0, 50)
+            btn.Position = UDim2.new(0, 10, 0, yPos)
             btn.BackgroundColor3 = table.find(selectedPlayers, p) and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(40, 40, 50)
             btn.Text = p.Name
             btn.TextColor3 = Color3.new(1,1,1)
@@ -52,13 +52,13 @@ local function updatePlayerList()
                     end
                 end
             end)
-            yPos = yPos + 50
+            yPos = yPos + 55
         end
     end
     playerListFrame.CanvasSize = UDim2.new(0, 0, 0, yPos)
 end
 
--- ☓コントロール奪取（緩やか）
+-- ☓コントロール奪取
 local function startXControlHijack()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -102,7 +102,7 @@ local function startPlayerTakeover()
     end
 end
 
--- 💀 Crush（地面押し込み + 回線落とし）
+-- 💀 Crush (回線落とし強化)
 local function startCrush()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -114,9 +114,9 @@ local function startCrush()
             connections[tPlayer] = RunService.Heartbeat:Connect(function()
                 if tPlayer.Parent and tHRP then
                     local current = tHRP.CFrame
-                    tHRP.CFrame = current:Lerp(current * CFrame.new(0, -100, 0), 0.12)
-                    tHRP.Velocity = Vector3.new(0, -200, 0)
-                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -200, 0)
+                    tHRP.CFrame = current:Lerp(current * CFrame.new(0, -150, 0), 0.15)
+                    tHRP.Velocity = Vector3.new(0, -300, 0)
+                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -300, 0)
                     tHum.Health = 0
                 end
             end)
@@ -124,7 +124,7 @@ local function startCrush()
     end
 end
 
--- 🌐 ラグスイッチ（めっちゃ重く・何もできない状態）
+-- 🌐 ラグスイッチ (めっちゃ重く・何もできない)
 local function startLagSwitch()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -141,7 +141,6 @@ local function startLagSwitch()
                     tHum.WalkSpeed = 0
                     tHum.JumpPower = 0
                     tHum.PlatformStand = true
-                    -- 極端ラグ誘発（位置微固定）
                     local current = tHRP.CFrame
                     tHRP.CFrame = current:Lerp(current, 0.05)
                 end
@@ -150,7 +149,7 @@ local function startLagSwitch()
     end
 end
 
--- 🔄 解除機能（乗っ取り/コントロール/Crush/ラグスイッチすべて解除）
+-- 🔄 解除機能
 local function stopAllHijack()
     for _, tPlayer in pairs(selectedPlayers) do
         local tChar = tPlayer.Character
@@ -158,7 +157,7 @@ local function stopAllHijack()
         local tHum = tChar:FindFirstChild("Humanoid")
         if tHRP and tHum then
             pcall(function()
-                tHRP:SetNetworkOwner(tPlayer)  -- 元の所有者に返す
+                tHRP:SetNetworkOwner(tPlayer)
                 tHum.PlatformStand = false
                 tHum.WalkSpeed = 16
                 tHum.JumpPower = 50
@@ -176,17 +175,33 @@ local function stopAllHijack()
     updatePlayerList()
 end
 
--- GUI（全部表示モード）
+-- mod更新（メニュー再起動）
+local function reloadMod()
+    stopAllHijack()
+    if noclipConn then noclipConn:Disconnect() end
+    noclipEnabled = false
+    scriptEnabled = false
+    ToggleBtn.Text = "OFF"
+    ToggleBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    mainFrame.Visible = false
+    showBtn.Visible = true
+    wait(0.5)
+    mainFrame.Visible = true
+    showBtn.Visible = false
+    updatePlayerList()
+end
+
+-- GUI（幅をさらに広げた全部表示モード）
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FullMenuV111"
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
 mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0.9, 0, 0.9, 0)
-mainFrame.Position = UDim2.new(0.05, 0, 0.05, 0)
+mainFrame.Size = UDim2.new(0.95, 0, 0.95, 0)  -- 幅を0.95に広げて全部表示
+mainFrame.Position = UDim2.new(0.025, 0, 0.025, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-mainFrame.BackgroundTransparency = 0.25
+mainFrame.BackgroundTransparency = 0.2
 mainFrame.BorderSizePixel = 0
 mainFrame.Visible = true
 mainFrame.Parent = ScreenGui
@@ -211,7 +226,7 @@ end)
 
 -- 全体ON/OFF
 local ToggleBtn = Instance.new("TextButton")
-ToggleBtn.Size = UDim2.new(0.9, 0, 0, 60)
+ToggleBtn.Size = UDim2.new(0.9, 0, 0, 70)
 ToggleBtn.Position = UDim2.new(0.05, 0, 0.02, 0)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 ToggleBtn.Text = "OFF"
@@ -228,17 +243,33 @@ ToggleBtn.MouseButton1Click:Connect(function()
     if not scriptEnabled then stopAllHijack() end
 end)
 
+-- mod更新ボタン
+local ReloadBtn = Instance.new("TextButton")
+ReloadBtn.Size = UDim2.new(0, 60, 0, 60)
+ReloadBtn.Position = UDim2.new(0.95, -70, 0.02, 0)
+ReloadBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
+ReloadBtn.Text = "🔄 mod更新"
+ReloadBtn.TextColor3 = Color3.new(0,0,0)
+ReloadBtn.TextScaled = true
+ReloadBtn.Font = Enum.Font.GothamBold
+ReloadBtn.Parent = mainFrame
+local ReloadCorner = Instance.new("UICorner"); ReloadCorner.CornerRadius = UDim.new(0, 15); ReloadCorner.Parent = ReloadBtn
+
+ReloadBtn.MouseButton1Click:Connect(function()
+    reloadMod()
+end)
+
 -- 閉じるボタン
 local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 50, 0, 50)
-CloseBtn.Position = UDim2.new(0.95, -55, 0.02, 0)
+CloseBtn.Size = UDim2.new(0, 60, 0, 60)
+CloseBtn.Position = UDim2.new(0.95, -135, 0.02, 0)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 CloseBtn.Text = "×"
 CloseBtn.TextColor3 = Color3.new(1,1,1)
 CloseBtn.TextScaled = true
 CloseBtn.Font = Enum.Font.GothamBold
 CloseBtn.Parent = mainFrame
-local CloseCorner = Instance.new("UICorner"); CloseCorner.CornerRadius = UDim.new(0, 12); CloseCorner.Parent = CloseBtn
+local CloseCorner = Instance.new("UICorner"); CloseCorner.CornerRadius = UDim.new(0, 15); CloseCorner.Parent = CloseBtn
 
 CloseBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
@@ -247,7 +278,7 @@ end)
 
 -- 再表示ボタン（丸）
 showBtn = Instance.new("TextButton")
-showBtn.Size = UDim2.new(0, 80, 0, 80)
+showBtn.Size = UDim2.new(0, 90, 0, 90)
 showBtn.Position = UDim2.new(0.02, 0, 0.88, 0)
 showBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
 showBtn.Text = "メニュー"
@@ -265,16 +296,16 @@ end)
 
 -- プレイヤーリスト
 playerListFrame = Instance.new("ScrollingFrame")
-playerListFrame.Size = UDim2.new(0.9, 0, 0.4, 0)
+playerListFrame.Size = UDim2.new(0.9, 0, 0.45, 0)
 playerListFrame.Position = UDim2.new(0.05, 0, 0.12, 0)
 playerListFrame.BackgroundTransparency = 1
-playerListFrame.ScrollBarThickness = 6
+playerListFrame.ScrollBarThickness = 8
 playerListFrame.Parent = mainFrame
 
--- ボタン類（全部表示で大きく）
+-- ボタン類（全部表示でさらに大きく）
 local XHijackBtn = Instance.new("TextButton")
-XHijackBtn.Size = UDim2.new(0.45, 0, 0, 70)
-XHijackBtn.Position = UDim2.new(0.025, 0, 0.55, 0)
+XHijackBtn.Size = UDim2.new(0.45, 0, 0, 80)
+XHijackBtn.Position = UDim2.new(0.025, 0, 0.60, 0)
 XHijackBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 XHijackBtn.Text = "☓ コントロール奪取"
 XHijackBtn.TextColor3 = Color3.new(1,1,1)
@@ -283,8 +314,8 @@ XHijackBtn.Font = Enum.Font.GothamBold
 XHijackBtn.Parent = mainFrame
 
 local TakeoverBtn = Instance.new("TextButton")
-TakeoverBtn.Size = UDim2.new(0.45, 0, 0, 70)
-TakeoverBtn.Position = UDim2.new(0.525, 0, 0.55, 0)
+TakeoverBtn.Size = UDim2.new(0.45, 0, 0, 80)
+TakeoverBtn.Position = UDim2.new(0.525, 0, 0.60, 0)
 TakeoverBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
 TakeoverBtn.Text = "🚀 プレイヤー乗っ取り"
 TakeoverBtn.TextColor3 = Color3.new(0,0,0)
@@ -293,8 +324,8 @@ TakeoverBtn.Font = Enum.Font.GothamBold
 TakeoverBtn.Parent = mainFrame
 
 local CrushBtn = Instance.new("TextButton")
-CrushBtn.Size = UDim2.new(0.45, 0, 0, 70)
-CrushBtn.Position = UDim2.new(0.025, 0, 0.70, 0)
+CrushBtn.Size = UDim2.new(0.45, 0, 0, 80)
+CrushBtn.Position = UDim2.new(0.025, 0, 0.75, 0)
 CrushBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 255)
 CrushBtn.Text = "💀 Crush (回線落とし)"
 CrushBtn.TextColor3 = Color3.new(1,1,1)
@@ -303,8 +334,8 @@ CrushBtn.Font = Enum.Font.GothamBold
 CrushBtn.Parent = mainFrame
 
 local LagSwitchBtn = Instance.new("TextButton")
-LagSwitchBtn.Size = UDim2.new(0.45, 0, 0, 70)
-LagSwitchBtn.Position = UDim2.new(0.525, 0, 0.70, 0)
+LagSwitchBtn.Size = UDim2.new(0.45, 0, 0, 80)
+LagSwitchBtn.Position = UDim2.new(0.525, 0, 0.75, 0)
 LagSwitchBtn.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
 LagSwitchBtn.Text = "🌐 ラグスイッチ (めっちゃ重く)"
 LagSwitchBtn.TextColor3 = Color3.new(0,0,0)
@@ -313,8 +344,8 @@ LagSwitchBtn.Font = Enum.Font.GothamBold
 LagSwitchBtn.Parent = mainFrame
 
 local NoclipBtn = Instance.new("TextButton")
-NoclipBtn.Size = UDim2.new(0.45, 0, 0, 70)
-NoclipBtn.Position = UDim2.new(0.025, 0, 0.85, 0)
+NoclipBtn.Size = UDim2.new(0.45, 0, 0, 80)
+NoclipBtn.Position = UDim2.new(0.025, 0, 0.90, 0)
 NoclipBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
 NoclipBtn.Text = "🌀 壁貫通 (OFF)"
 NoclipBtn.TextColor3 = Color3.new(1,1,1)
@@ -323,8 +354,8 @@ NoclipBtn.Font = Enum.Font.GothamBold
 NoclipBtn.Parent = mainFrame
 
 local ResetBtn = Instance.new("TextButton")
-ResetBtn.Size = UDim2.new(0.45, 0, 0, 70)
-ResetBtn.Position = UDim2.new(0.525, 0, 0.85, 0)
+ResetBtn.Size = UDim2.new(0.45, 0, 0, 80)
+ResetBtn.Position = UDim2.new(0.525, 0, 0.90, 0)
 ResetBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 ResetBtn.Text = "🛑 リセット"
 ResetBtn.TextColor3 = Color3.new(1,1,1)
@@ -333,8 +364,8 @@ ResetBtn.Font = Enum.Font.GothamBold
 ResetBtn.Parent = mainFrame
 
 local UnhijackBtn = Instance.new("TextButton")
-UnhijackBtn.Size = UDim2.new(0.9, 0, 0, 60)
-UnhijackBtn.Position = UDim2.new(0.05, 0, 0.92, 0)
+UnhijackBtn.Size = UDim2.new(0.9, 0, 0, 70)
+UnhijackBtn.Position = UDim2.new(0.05, 0, 0.95, 0)
 UnhijackBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
 UnhijackBtn.Text = "🔄 乗っ取り/コントロール解除"
 UnhijackBtn.TextColor3 = Color3.new(0,0,0)
@@ -390,7 +421,6 @@ ResetBtn.MouseButton1Click:Connect(function()
     updatePlayerList()
 end)
 
--- 乗っ取り/コントロール解除
 UnhijackBtn.MouseButton1Click:Connect(function()
     if scriptEnabled then
         stopAllHijack()
@@ -404,4 +434,4 @@ spawn(function()
     end
 end)
 
-print("💎 v11.3 Loaded! | Crush回線落とし + ラグスイッチめっちゃ重く | 解除ボタン完備")
+print("💎 v11.5 Loaded! | メニュー幅広げ全部表示モード | Crush回線落とし + ラグスイッチめっちゃ重く")
