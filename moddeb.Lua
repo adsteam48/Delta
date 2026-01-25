@@ -1,5 +1,5 @@
--- Delta Mobile Steal a Brainrot ∞ v11.6 (名古屋 メニュー幅広げ全部表示 2026)
--- 💎 超見やすい全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ・解除・mod更新
+-- Delta Mobile Steal a Brainrot ∞ v11.6 (名古屋 超本物仕様 + ラグスイッチ本物ボタン 2026)
+-- 💎 全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ(めっちゃ重く)・解除・mod更新
 -- ⚠️ 教育/テストのみ! 野良サーバー10秒以内使用厳守
 
 local Players = game:GetService("Players")
@@ -15,6 +15,13 @@ local connections = {}
 local noclipConn = nil
 local mainFrame = nil
 local showBtn = nil
+local lagButton = nil
+local isLagging = false
+local activeLagConnection = nil
+
+-- ラグスイッチ設定（本物仕様）
+local LAG_DURATION = 0.15  -- ラグ持続時間（秒）
+local LAG_INTENSITY = 150000  -- ラグ強度（この値で重くなる）
 
 -- ログ（デフォルトオフ）
 local logEnabled = false
@@ -102,7 +109,7 @@ local function startPlayerTakeover()
     end
 end
 
--- 💀 Crush (回線落とし強化)
+-- 💀 Crush（回線落とし）
 local function startCrush()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -115,8 +122,8 @@ local function startCrush()
                 if tPlayer.Parent and tHRP then
                     local current = tHRP.CFrame
                     tHRP.CFrame = current:Lerp(current * CFrame.new(0, -150, 0), 0.15)
-                    tHRP.Velocity = Vector3.new(0, -300, 0)
-                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -300, 0)
+                    tHRP.Velocity = Vector3.new(0, -500, 0)
+                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -500, 0)
                     tHum.Health = 0
                 end
             end)
@@ -124,7 +131,7 @@ local function startCrush()
     end
 end
 
--- 🌐 ラグスイッチ (めっちゃ重く・何もできない)
+-- 🌐 ラグスイッチ（めっちゃ重く・何もできない）
 local function startLagSwitch()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -191,14 +198,14 @@ local function reloadMod()
     updatePlayerList()
 end
 
--- GUI（幅をさらに広げた全部表示モード）
+-- GUI（全部表示モード・幅広げ）
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FullMenuV111"
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
 mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0.95, 0, 0.95, 0)  -- 幅を0.95に広げて全部表示
+mainFrame.Size = UDim2.new(0.95, 0, 0.95, 0)
 mainFrame.Position = UDim2.new(0.025, 0, 0.025, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 mainFrame.BackgroundTransparency = 0.2
@@ -434,4 +441,4 @@ spawn(function()
     end
 end)
 
-print("💎 v11.5 Loaded! | メニュー幅広げ全部表示モード | Crush回線落とし + ラグスイッチめっちゃ重く")
+print("💎 v11.5 Loaded! | メニュー幅広げ全部表示 | Crush回線落とし + ラグスイッチめっちゃ重く")
