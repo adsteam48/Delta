@@ -1,6 +1,6 @@
--- Delta Mobile Steal a Brainrot ∞ v11.6 (名古屋 超本物仕様 + ラグスイッチ本物ボタン 2026)
--- 💎 全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ(めっちゃ重く)・解除・mod更新
--- ⚠️ 教育/テストのみ! 野良サーバー10秒以内使用厳守
+-- Delta Mobile Steal a Brainrot ∞ v11.9 (名古屋 超本気仕様 2026)
+-- 💎 全画面メニュー・検知回避極限・壁貫通・☓奪取・🚀乗っ取り・Crush・ラグスイッチ・ALL TO BASE・解除・mod更新
+-- ⚠️ 本気使用・野良/プライベート10秒以内使用厳守
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -10,22 +10,26 @@ local player = Players.LocalPlayer
 local scriptEnabled = false
 local noclipEnabled = false
 local selectedPlayers = {}
-local maxSelected = 5
+local maxSelected = 10
 local connections = {}
 local noclipConn = nil
 local mainFrame = nil
 local showBtn = nil
-local lagButton = nil
-local isLagging = false
-local activeLagConnection = nil
 
--- ラグスイッチ設定（本物仕様）
-local LAG_DURATION = 0.15  -- ラグ持続時間（秒）
-local LAG_INTENSITY = 150000  -- ラグ強度（この値で重くなる）
-
--- ログ（デフォルトオフ）
+-- ログオフ
 local logEnabled = false
 local function addLog(msg) end
+
+-- Brainrot検知
+local function findBrainrots(char)
+    local brainrots = {}
+    for _, obj in pairs(char:GetChildren()) do
+        if obj:IsA("Model") and (obj.Name:lower():find("brainrot") or obj.Name:lower():find("brain")) then
+            table.insert(brainrots, obj)
+        end
+    end
+    return brainrots
+end
 
 -- プレイヤーリスト更新
 local playerListFrame
@@ -109,7 +113,7 @@ local function startPlayerTakeover()
     end
 end
 
--- 💀 Crush（回線落とし）
+-- 💀 Crush（回線落とし本気）
 local function startCrush()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -121,9 +125,9 @@ local function startCrush()
             connections[tPlayer] = RunService.Heartbeat:Connect(function()
                 if tPlayer.Parent and tHRP then
                     local current = tHRP.CFrame
-                    tHRP.CFrame = current:Lerp(current * CFrame.new(0, -150, 0), 0.15)
-                    tHRP.Velocity = Vector3.new(0, -500, 0)
-                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -500, 0)
+                    tHRP.CFrame = current:Lerp(current * CFrame.new(0, -300, 0), 0.18)
+                    tHRP.Velocity = Vector3.new(0, -800, 0)
+                    tHRP.AssemblyLinearVelocity = Vector3.new(0, -800, 0)
                     tHum.Health = 0
                 end
             end)
@@ -131,7 +135,7 @@ local function startCrush()
     end
 end
 
--- 🌐 ラグスイッチ（めっちゃ重く・何もできない）
+-- 🌐 ラグスイッチ（めっちゃ重く本気）
 local function startLagSwitch()
     if #selectedPlayers == 0 then return end
     for _, tPlayer in pairs(selectedPlayers) do
@@ -149,14 +153,34 @@ local function startLagSwitch()
                     tHum.JumpPower = 0
                     tHum.PlatformStand = true
                     local current = tHRP.CFrame
-                    tHRP.CFrame = current:Lerp(current, 0.05)
+                    tHRP.CFrame = current:Lerp(current, 0.03)
                 end
             end)
         end
     end
 end
 
--- 🔄 解除機能
+-- 🚀 ALL TO BASE（相手のブレインロットを一気に自分のベースにテレポート盗み）
+local function startAllToBase()
+    if #selectedPlayers == 0 then return end
+    local myBasePos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position or Vector3.new()
+    
+    for _, tPlayer in pairs(selectedPlayers) do
+        local tChar = tPlayer.Character
+        local brainrots = findBrainrots(tChar)
+        for _, br in pairs(brainrots) do
+            if br and br.Parent then
+                br.Parent = player.Character
+                if br:FindFirstChild("HumanoidRootPart") then
+                    -- 自分のベースに一気にテレポート
+                    br.HumanoidRootPart.CFrame = CFrame.new(myBasePos + Vector3.new(math.random(-8,8), 0, math.random(-8,8)))
+                end
+            end
+        end
+    end
+end
+
+-- 🔄 解除
 local function stopAllHijack()
     for _, tPlayer in pairs(selectedPlayers) do
         local tChar = tPlayer.Character
@@ -182,7 +206,7 @@ local function stopAllHijack()
     updatePlayerList()
 end
 
--- mod更新（メニュー再起動）
+-- mod更新
 local function reloadMod()
     stopAllHijack()
     if noclipConn then noclipConn:Disconnect() end
@@ -250,7 +274,7 @@ ToggleBtn.MouseButton1Click:Connect(function()
     if not scriptEnabled then stopAllHijack() end
 end)
 
--- mod更新ボタン
+-- mod更新
 local ReloadBtn = Instance.new("TextButton")
 ReloadBtn.Size = UDim2.new(0, 60, 0, 60)
 ReloadBtn.Position = UDim2.new(0.95, -70, 0.02, 0)
@@ -266,7 +290,7 @@ ReloadBtn.MouseButton1Click:Connect(function()
     reloadMod()
 end)
 
--- 閉じるボタン
+-- 閉じる
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 60, 0, 60)
 CloseBtn.Position = UDim2.new(0.95, -135, 0.02, 0)
@@ -283,7 +307,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     showBtn.Visible = true
 end)
 
--- 再表示ボタン（丸）
+-- 再表示（丸）
 showBtn = Instance.new("TextButton")
 showBtn.Size = UDim2.new(0, 90, 0, 90)
 showBtn.Position = UDim2.new(0.02, 0, 0.88, 0)
@@ -309,7 +333,7 @@ playerListFrame.BackgroundTransparency = 1
 playerListFrame.ScrollBarThickness = 8
 playerListFrame.Parent = mainFrame
 
--- ボタン類（全部表示でさらに大きく）
+-- ボタン類
 local XHijackBtn = Instance.new("TextButton")
 XHijackBtn.Size = UDim2.new(0.45, 0, 0, 80)
 XHijackBtn.Position = UDim2.new(0.025, 0, 0.60, 0)
@@ -350,9 +374,20 @@ LagSwitchBtn.TextScaled = true
 LagSwitchBtn.Font = Enum.Font.GothamBold
 LagSwitchBtn.Parent = mainFrame
 
+local AllToBaseBtn = Instance.new("TextButton")
+AllToBaseBtn.Size = UDim2.new(0.9, 0, 0, 80)
+AllToBaseBtn.Position = UDim2.new(0.05, 0, 0.85, 0)
+AllToBaseBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+AllToBaseBtn.Text = "🚀 ALL TO BASE (一気に自分のベースに盗む)"
+AllToBaseBtn.TextColor3 = Color3.new(0,0,0)
+AllToBaseBtn.TextScaled = true
+AllToBaseBtn.Font = Enum.Font.GothamBold
+AllToBaseBtn.Parent = mainFrame
+local AllToBaseCorner = Instance.new("UICorner"); AllToBaseCorner.CornerRadius = UDim.new(0, 15); AllToBaseCorner.Parent = AllToBaseBtn
+
 local NoclipBtn = Instance.new("TextButton")
 NoclipBtn.Size = UDim2.new(0.45, 0, 0, 80)
-NoclipBtn.Position = UDim2.new(0.025, 0, 0.90, 0)
+NoclipBtn.Position = UDim2.new(0.025, 0, 0.92, 0)
 NoclipBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
 NoclipBtn.Text = "🌀 壁貫通 (OFF)"
 NoclipBtn.TextColor3 = Color3.new(1,1,1)
@@ -362,7 +397,7 @@ NoclipBtn.Parent = mainFrame
 
 local ResetBtn = Instance.new("TextButton")
 ResetBtn.Size = UDim2.new(0.45, 0, 0, 80)
-ResetBtn.Position = UDim2.new(0.525, 0, 0.90, 0)
+ResetBtn.Position = UDim2.new(0.525, 0, 0.92, 0)
 ResetBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 ResetBtn.Text = "🛑 リセット"
 ResetBtn.TextColor3 = Color3.new(1,1,1)
@@ -372,7 +407,7 @@ ResetBtn.Parent = mainFrame
 
 local UnhijackBtn = Instance.new("TextButton")
 UnhijackBtn.Size = UDim2.new(0.9, 0, 0, 70)
-UnhijackBtn.Position = UDim2.new(0.05, 0, 0.95, 0)
+UnhijackBtn.Position = UDim2.new(0.05, 0, 0.97, 0)
 UnhijackBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
 UnhijackBtn.Text = "🔄 乗っ取り/コントロール解除"
 UnhijackBtn.TextColor3 = Color3.new(0,0,0)
@@ -396,6 +431,10 @@ end)
 
 LagSwitchBtn.MouseButton1Click:Connect(function()
     if scriptEnabled then startLagSwitch() end
+end)
+
+AllToBaseBtn.MouseButton1Click:Connect(function()
+    if scriptEnabled then startAllToBase() end
 end)
 
 NoclipBtn.MouseButton1Click:Connect(function()
@@ -441,4 +480,4 @@ spawn(function()
     end
 end)
 
-print("💎 v11.5 Loaded! | メニュー幅広げ全部表示 | Crush回線落とし + ラグスイッチめっちゃ重く")
+print("💎 v11.9 Loaded! | ALL TO BASE追加 | 相手のブレインロットを一気に自分のベースにテレポート盗む")
