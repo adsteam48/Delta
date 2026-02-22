@@ -1,0 +1,120 @@
+-- OREO HUB | Simple Teleport Save
+
+local player = game.Players.LocalPlayer
+local savedPosition = nil
+local correctKey = "oreo"
+
+-- GUI作成
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "OreoHub"
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- キー画面
+local KeyFrame = Instance.new("Frame")
+KeyFrame.Size = UDim2.new(0, 220, 0, 130)
+KeyFrame.Position = UDim2.new(0.5, -110, 0.5, -65)
+KeyFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+KeyFrame.Parent = ScreenGui
+KeyFrame.Active = true
+KeyFrame.Draggable = true
+Instance.new("UICorner", KeyFrame).CornerRadius = UDim.new(0,12)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,0,0,30)
+Title.BackgroundTransparency = 1
+Title.Text = "oreo hub"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.TextScaled = true
+Title.Parent = KeyFrame
+
+local KeyBox = Instance.new("TextBox")
+KeyBox.Size = UDim2.new(0.9,0,0,35)
+KeyBox.Position = UDim2.new(0.05,0,0,40)
+KeyBox.PlaceholderText = ""
+KeyBox.Text = ""
+KeyBox.BackgroundColor3 = Color3.fromRGB(35,35,35)
+KeyBox.TextColor3 = Color3.new(1,1,1)
+KeyBox.Parent = KeyFrame
+Instance.new("UICorner", KeyBox)
+
+local Submit = Instance.new("TextButton")
+Submit.Size = UDim2.new(0.9,0,0,30)
+Submit.Position = UDim2.new(0.05,0,0,85)
+Submit.Text = "ENTER"
+Submit.BackgroundColor3 = Color3.fromRGB(255,255,255)
+Submit.TextColor3 = Color3.new(0,0,0)
+Submit.Parent = KeyFrame
+Instance.new("UICorner", Submit)
+
+-- メインUI
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 160, 0, 120)
+MainFrame.Position = UDim2.new(0, 20, 0.5, -60)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
+MainFrame.Active = true
+MainFrame.Draggable = true
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0,12)
+
+local MainTitle = Instance.new("TextLabel")
+MainTitle.Size = UDim2.new(1,0,0,25)
+MainTitle.BackgroundTransparency = 1
+MainTitle.Text = "oreo hub"
+MainTitle.TextColor3 = Color3.new(1,1,1)
+MainTitle.TextScaled = true
+MainTitle.Parent = MainFrame
+
+local SaveButton = Instance.new("TextButton")
+SaveButton.Size = UDim2.new(0.9,0,0,30)
+SaveButton.Position = UDim2.new(0.05,0,0,35)
+SaveButton.Text = "SAVE"
+SaveButton.BackgroundColor3 = Color3.fromRGB(60,150,255)
+SaveButton.TextColor3 = Color3.new(1,1,1)
+SaveButton.Parent = MainFrame
+Instance.new("UICorner", SaveButton)
+
+local TpButton = Instance.new("TextButton")
+TpButton.Size = UDim2.new(0.9,0,0,30)
+TpButton.Position = UDim2.new(0.05,0,0,70)
+TpButton.Text = "TP"
+TpButton.BackgroundColor3 = Color3.fromRGB(60,255,120)
+TpButton.TextColor3 = Color3.new(1,1,1)
+TpButton.Parent = MainFrame
+Instance.new("UICorner", TpButton)
+
+local ClearButton = Instance.new("TextButton")
+ClearButton.Size = UDim2.new(0.9,0,0,20)
+ClearButton.Position = UDim2.new(0.05,0,0,105)
+ClearButton.Text = "CLEAR"
+ClearButton.BackgroundColor3 = Color3.fromRGB(255,80,80)
+ClearButton.TextColor3 = Color3.new(1,1,1)
+ClearButton.Parent = MainFrame
+Instance.new("UICorner", ClearButton)
+
+-- キー判定
+Submit.MouseButton1Click:Connect(function()
+	if KeyBox.Text == correctKey then
+		KeyFrame.Visible = false
+		MainFrame.Visible = true
+	end
+end)
+
+-- 機能
+SaveButton.MouseButton1Click:Connect(function()
+	local character = player.Character
+	if character and character:FindFirstChild("HumanoidRootPart") then
+		savedPosition = character.HumanoidRootPart.CFrame
+	end
+end)
+
+TpButton.MouseButton1Click:Connect(function()
+	local character = player.Character
+	if savedPosition and character and character:FindFirstChild("HumanoidRootPart") then
+		character.HumanoidRootPart.CFrame = savedPosition
+	end
+end)
+
+ClearButton.MouseButton1Click:Connect(function()
+	savedPosition = nil
+end)
